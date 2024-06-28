@@ -91,8 +91,7 @@ const loginUser = asyncHandler (async (req,res) => {
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
     const option = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', 
+        secure: true
     }
 
     return res.status(200)
