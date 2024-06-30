@@ -22,9 +22,9 @@ router.route("/")
     publishAVideo
 )
 
-router.route("/c/:videoId")
+router.route("/deletePost").post(deletePost)
+router.route("/postFunction")
 .get(getPostById)
-.delete(deletePost)
 .post(togglePublishStatus)
 .patch(upload.single("thumbnail"), updateThumbnail);
 router.route("/getUserPost")

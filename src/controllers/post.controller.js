@@ -139,7 +139,7 @@ const getPostById = asyncHandler(async (req, res) => {
 });
 
 const deletePost = asyncHandler(async (req, res) => {
-  const { postId } = req.params;
+  const { postId } = req.body;
   if (!postId) throw new ApiError(400, "video Id is required");
 
   const post = await Post.findById(postId);
@@ -150,9 +150,6 @@ const deletePost = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Cann't find the video Product Id");
   const deleteCurrentPost = await cloudinary.uploader.destroy(
     postProductId,
-    {
-      resource_type: "auto",
-    },
     function (error, result) {
       if (!result)
         throw new ApiError(
@@ -182,7 +179,7 @@ const deletePost = asyncHandler(async (req, res) => {
 
     if (!deleteThumbnail) throw new ApiError(400, "Failed to delete thumbnail");
   }
-  const postDataDelete = await Video.deleteOne({
+  const postDataDelete = await Post.deleteOne({
     _id: postId,
   });
   if (!postDataDelete)
