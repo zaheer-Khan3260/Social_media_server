@@ -5,8 +5,8 @@ import { getSubscribedChannels, getUserChannelSubscribers, toggleSubscription } 
 const router = Router()
 router.use(varifyJwt);
 
-router.route("/isSubscribed/c/:channelId")
-.get(toggleSubscription);
+router.route("/isSubscribed")
+.post(toggleSubscription);
 router.route("/subscriber/c/:channelId")
 .get(getUserChannelSubscribers)
 router.route("/subscribedTo/c/:subscriberId")

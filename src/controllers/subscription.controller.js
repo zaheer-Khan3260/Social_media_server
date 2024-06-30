@@ -7,7 +7,8 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 
 
 const toggleSubscription = asyncHandler(async (req, res) => {
-    const { channelId } = req.params;
+    const { channelId } = req.body;
+    console.log("Channel Id in toggel subscription", channelId)
     if (!channelId) throw new ApiError(400, "Channel ID is required");
   
     const userId = req.user?._id;

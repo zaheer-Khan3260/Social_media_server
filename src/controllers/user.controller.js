@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 import { User } from "../models/user.model.js"
 import  {deleteFromCloudinary, uploadOnCloudinary}  from "../utils/Cloudinary.js"
 import jwt from "jsonwebtoken"
-import axios from "axios"
+import { v2 as cloudinary } from "cloudinary"
 
 
 const generateAccessAndRefereshTokens = async(userId) =>{
@@ -92,7 +92,7 @@ const loginUser = asyncHandler (async (req,res) => {
     const option = {
         httpOnly: true,
         secure: true,
-        sameSite: 'None'
+        // sameSite: 'None'
     }
 
     return res.status(200)
@@ -125,7 +125,7 @@ const loggedOutUser = asyncHandler(async (req, res) => {
     const option = {
         httpOnly: true,
         secure:true,
-        sameSite: 'None'
+        // sameSite: 'None'
     }
     
     return res.status(200)
@@ -223,16 +223,18 @@ const getUserDataById = asyncHandler(async(req,res) => {
 })
 
 const updatAccountDetails = asyncHandler(async (req, res) => {
-    const {fullname, email} = req.body
+    const {fullname, email, username, bio} = req.body
 
-    if(!fullname && !email) throw new ApiError(400, "All fields are required");
+    if(!fullname && !email && username && bio) throw new ApiError(400, "All fields are required");
 
         const user = await User.findByIdAndUpdate(
             req.user?._id,
             {
                 $set: {
                     fullname,
-                    email
+                    email,
+                    username,
+                    bio
                 }
             },
             {
@@ -262,13 +264,21 @@ const updateAvatar = asyncHandler (async (req,res) => {
         
         const oldAvatarImageUrl = currentUser?.avatar;
 
-        if(!oldAvatarImageUrl) throw new ApiError(400, "Cannot find the old avatar");
-
+        if(oldAvatarImageUrl){
         const productId = extractProductId(oldAvatarImageUrl);
         
-       const deleteImage =  await deleteFromCloudinary(productId);
-
+        const deleteImage = await cloudinary.uploader.destroy(
+            productId,
+            function (error, result) {
+              if (!result)
+                throw new ApiError(
+                  400,
+                  error ? error.message : "Failed to delete video"
+                );
+            }
+          );
         if(!deleteImage) throw new ApiError(400, "Failed to delete Avatar")
+        }
         
        const cloudinaryUrl = await uploadOnCloudinary(localFilePath);
        if(!cloudinaryUrl.url) throw new ApiError(500, "An Error Occur during updating avatar");
@@ -304,16 +314,32 @@ const deleteAvatar = asyncHandler( async (req, res) => {
 
         const productId = extractProductId(oldAvatarImageUrl);
         
-       const deleteImage =  await deleteFromCloudinary(productId);
+        const deleteImage = await cloudinary.uploader.destroy(
+            productId,
+            function (error, result) {
+              if (!result)
+                throw new ApiError(
+                  400,
+                  error ? error.message : "Failed to delete avatar"
+                );
+            }
+          );
         if(!deleteImage) throw new ApiError(400, "Failed to delete Avatar")
+
+            const updatedUserData = await User.findByIdAndUpdate(
+                currentUser._id,
+                {
+                    avatar: ""
+                },
+                {new: true}
+            )
 
         return res.status(200).json(
         new ApiResponse(
         200,
-        deleteImage,
+        updatedUserData,
         "avatar delete successfully"
         )
-        
         )
 
 })
