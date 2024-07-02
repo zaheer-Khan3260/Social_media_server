@@ -21,13 +21,14 @@ import UserRouter from "./routes/user.routes.js";
 import PostRouter from "./routes/post.routes.js"
 import SubscriptionRouter from "./routes/subscription.routes.js"
 import LikeRouter from "./routes/like.routes.js"
-
+import messageRouter from "./routes/message.routes.js"
 // routes decleration
 
 app.use("/api/v1/users", UserRouter);
 app.use("/api/v1/posts", PostRouter);
 app.use("/api/v1/subscription", SubscriptionRouter)
 app.use("/api/v1/like", LikeRouter)
+app.use("/api/v1/message", messageRouter)
 
 
 

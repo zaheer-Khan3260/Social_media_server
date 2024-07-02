@@ -8,7 +8,7 @@ const conversationSchema = new Schema({
         }
     ],
 
-    message: [
+    messages: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Message",
@@ -18,3 +18,5 @@ const conversationSchema = new Schema({
 },{
     timestamps: true
 })
+
+export const Conversation = mongoose.model("Conversation", conversationSchema)
