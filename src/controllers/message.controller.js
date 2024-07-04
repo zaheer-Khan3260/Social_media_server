@@ -7,7 +7,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const sendMessage = asyncHandler(async(req, res) => {
     try {
-        const { recieverId } = req.params;
+        const { recieverId } = req.body;
         const { message } = req.body
     
         if(!recieverId) throw new ApiError(401, "Sender Id is required");
@@ -54,7 +54,7 @@ export const sendMessage = asyncHandler(async(req, res) => {
 export const getMessage = asyncHandler(async(req, res) => {
 
     try {
-        const { userToChat } = req.params;
+        const { userToChat } = req.body
         if(!userToChat) throw new ApiError(400, "User to chat id is required")
         const senderId = req.user?._id;
 
