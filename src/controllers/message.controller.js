@@ -52,6 +52,7 @@ export const sendMessage = asyncHandler(async(req, res) => {
 })
 
 export const getMessage = asyncHandler(async(req, res) => {
+
     try {
         const { userToChat } = req.params;
         if(!userToChat) throw new ApiError(400, "User to chat id is required")
@@ -80,4 +81,43 @@ export const getMessage = asyncHandler(async(req, res) => {
         console.log("Error in sendMessage controller: ", error.message);
 		res.status(500).json({ error: "Internal server error" });
     }
+})
+
+export const getConversation = asyncHandler(async(req, res) => {
+    const senderId = req.user?._id
+    const conversation = await Conversation.find({
+        conversationBetween: {$all: [senderId]}
+    }).populate("conversationBetween").populate("messages")
+    if(!conversation) return res.status(200).json(
+        new ApiResponse(
+            200,
+            [],
+            "You didn't send message anyone"
+        )
+    )
+    return res.status(201).json(
+        new ApiResponse(201,
+            conversation,
+            "Fetch conversation successfully"
+        )
+    )
+})
+
+export const getConversationById = asyncHandler(async(req, res) => {
+    const {conversationId} = req.body
+    if(!conversationId) throw new ApiError(400, "Conversation id required")
+    const conversation = await Conversation.findById(conversationId).populate("conversationBetween").populate("messages")
+    if(!conversation) return res.status(200).json(
+        new ApiResponse(
+            200,
+            [],
+            "You didn't send message anyone"
+        )
+    )
+    return res.status(201).json(
+        new ApiResponse(201,
+            conversation,
+            "Fetch conversation successfully"
+        )
+    )
 })
