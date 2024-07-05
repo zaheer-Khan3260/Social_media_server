@@ -7,10 +7,10 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const sendMessage = asyncHandler(async(req, res) => {
     try {
-        const { recieverId } = req.body;
-        const { message } = req.body
+        const { message, recieverId } = req.body;
+        
     
-        if(!recieverId) throw new ApiError(401, "Sender Id is required");
+        if(!recieverId) throw new ApiError(401, "reciever Id is required");
     
         const senderId = req.user?._id
         if(!senderId) throw new ApiError(401, "Unauthorised request");
@@ -57,7 +57,6 @@ export const getMessage = asyncHandler(async(req, res) => {
         const { userToChat } = req.body
         if(!userToChat) throw new ApiError(400, "User to chat id is required")
         const senderId = req.user?._id;
-
         const conversation = await Conversation.findOne({
             conversationBetween: {$all: [senderId, userToChat]}
         }).populate("messages")
@@ -76,7 +75,6 @@ export const getMessage = asyncHandler(async(req, res) => {
                 "Fetching conversation successfully "
             )
         )
-
     } catch (error) {
         console.log("Error in sendMessage controller: ", error.message);
 		res.status(500).json({ error: "Internal server error" });

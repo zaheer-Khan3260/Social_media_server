@@ -6,7 +6,7 @@ const router = Router();
 
 router.use(varifyJwt)
 
-router.route("/send/:recieverId").post( sendMessage )
+router.route("/sendMessage").post( sendMessage )
 router.route("/getMessage/:userToChat").post( getMessage )
 router.route("/getConversation").get(getConversation)
 router.route("/getConversationById").post(getConversationById)
