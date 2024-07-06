@@ -119,3 +119,20 @@ export const getConversationById = asyncHandler(async(req, res) => {
         )
     )
 })
+
+export const deleteMessage = asyncHandler(async(req, res) => {
+    const {messageId} = req.body;
+
+    if(!messageId) throw new ApiError(400, "Message Id is required")
+
+        const messageDataDelete = await Message.findByIdAndDelete(messageId);
+        if(!messageDataDelete) throw new ApiError(404, "Failed to delete the message");
+
+        return res.status(200).json(
+            new ApiResponse(
+                200,
+                [],
+                "delete message successfully"
+            )
+        )
+})
