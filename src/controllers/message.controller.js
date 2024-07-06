@@ -9,7 +9,7 @@ export const sendMessage = asyncHandler(async(req, res) => {
     try {
         const { message, recieverId } = req.body;
         
-    
+        if(!message) throw new ApiError(401, "message is required");
         if(!recieverId) throw new ApiError(401, "reciever Id is required");
     
         const senderId = req.user?._id
