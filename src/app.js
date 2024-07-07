@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser"
 
 const app = express();
 console.log("Cors origin env",process.env.CORS_ORIGIN )
+
+
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
     credentials: true
@@ -29,7 +31,6 @@ app.use("/api/v1/posts", PostRouter);
 app.use("/api/v1/subscription", SubscriptionRouter)
 app.use("/api/v1/like", LikeRouter)
 app.use("/api/v1/message", messageRouter)
-
 
 
 export {app}
