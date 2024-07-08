@@ -3,6 +3,7 @@ import { Message } from "../models/message.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { getRecieverSocketId, io } from "../socket/socket.js";
 
 
 export const sendMessage = asyncHandler(async(req, res) => {
@@ -37,6 +38,12 @@ export const sendMessage = asyncHandler(async(req, res) => {
         }
     
         await Promise.all([conversation.save(), newMessage.save()])
+
+        const reciverSocketId = getRecieverSocketId(recieverId)
+        if(reciverSocketId){
+            io.to(reciverSocketId).emit("newMessage", newMessage)
+        } 
+
         return res.status(201).json(
             new ApiResponse(
                 201,
