@@ -1,16 +1,24 @@
 import express from "express";
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import { app } from "./socket/socket.js";
 
 
-const app = express();
-console.log("Cors origin env",process.env.CORS_ORIGIN )
+console.log("Cors origin env", process.env.CORS_ORIGIN);
 
-
-app.use(cors({
+const corsOptions = {
     origin: process.env.CORS_ORIGIN,
-    credentials: true
-}))
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    credentials: true,
+    allowedHeaders: "Content-Type, Authorization, X-Requested-With",
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+};
+
+app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options("*", cors(corsOptions));
 
 // we use the keyword "use" for writing middle ware in our code using express
 
