@@ -41,8 +41,8 @@ export const sendMessage = asyncHandler(async(req, res) => {
 
         const reciverSocketId = getRecieverSocketId(recieverId)
         if(reciverSocketId){
-            io.to(reciverSocketId).emit("newMessage", newMessage)
-        } 
+         io.emit("newMessage", newMessage)
+        }
 
         return res.status(201).json(
             new ApiResponse(
