@@ -24,11 +24,11 @@ router.route("/")
 
 router.route("/deletePost").post(deletePost)
 router.route("/postFunction")
-.get(getPostById)
 .post(togglePublishStatus)
 .patch(upload.single("thumbnail"), updateThumbnail);
 router.route("/getUserPost")
 .post(getUserPosts)
+router.route("/getPostById").post(getPostById)
 
 
 export default router;

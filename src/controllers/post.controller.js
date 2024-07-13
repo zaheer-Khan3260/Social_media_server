@@ -1,4 +1,4 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import mongoose, { isValidObjectId, mongo } from "mongoose";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/Cloudinary.js";
@@ -100,13 +100,21 @@ const publishAVideo = asyncHandler(async (req, res) => {
 });
 
 const getPostById = asyncHandler(async (req, res) => {
-  const { postId } = req.params;
-  if (!mongoose.Types.isValidObjectId(postId)) throw new ApiError(400, "Post Id is invalid");
-  
+  const { postId } = req.body;
+  if (!postId) throw new ApiError(400, "Post Id is invalid");
+  const currentPostId = await Post.findById(postId);
   const post = await Post.aggregate([
     {
       $match: {
-        _id: new mongoose.Types.ObjectId(postId)
+        _id: new mongoose.Types.ObjectId(currentPostId._id)
+      }
+    },
+    {
+      $lookup: {
+        from: "likes",
+        foreignField: "post",
+        localField: "_id",
+        as: "postLikes"
       }
     },
     {
@@ -118,6 +126,25 @@ const getPostById = asyncHandler(async (req, res) => {
       }
     },
     {
+      $addFields: {
+        likeCount: {
+          $size: "$postLikes"
+        },
+        isLiked: {
+          $cond: {
+            if: {
+              $in: [
+                new mongoose.Types.ObjectId(req.user?._id),
+                "$postLikes.likedBy"
+              ]
+            },
+            then: true,
+            else: false
+          }
+        }
+      }
+    },
+    {
       $project: {
         postFile: 1,
         duration: 1,
@@ -125,7 +152,9 @@ const getPostById = asyncHandler(async (req, res) => {
         views: 1,
         comment: 1,
         owner: 1,
-        caption: 1
+        caption: 1,
+        likeCount: 1,
+        isLiked: 1,
       }
     }
   ]);
