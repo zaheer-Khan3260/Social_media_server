@@ -42,7 +42,7 @@ const togglePostLike = asyncHandler(async (req, res) => {
 })
 
 const toggleCommentLike = asyncHandler(async (req, res) => {
-    const {commentId} = req.params
+    const {commentId} = req.body
     if(!commentId) throw new ApiError(400, "Video ID is required");
 
     const isCommentLiked = await Like.findOne({

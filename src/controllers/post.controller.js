@@ -25,9 +25,20 @@ const getAllPosts = asyncHandler(async (req, res) => {
       }
     },
     {
+      $lookup: {
+        from: "comments",
+        foreignField: "post",
+        localField: "_id",
+        as: "postComments"
+      }
+    },
+    {
       $addFields: {
           likeCount: {
             $size: "$postLikes"
+          },
+          commentCount: {
+            $size: "$postComments"
           },
           isLiked: {
             $cond: {
@@ -51,7 +62,8 @@ const getAllPosts = asyncHandler(async (req, res) => {
         isLiked: 1,
         comment: 1,
         owner: 1,
-        createdAt: 1
+        createdAt: 1,
+        commentCount:1,
       }
     }
   ]);
@@ -126,6 +138,17 @@ const getPostById = asyncHandler(async (req, res) => {
       }
     },
     {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "owner"
+      }
+    },
+    {
+      $unwind: "$owner"
+    },
+    {
       $addFields: {
         likeCount: {
           $size: "$postLikes"
@@ -151,7 +174,9 @@ const getPostById = asyncHandler(async (req, res) => {
         thumbnail: 1,
         views: 1,
         comment: 1,
-        owner: 1,
+        'owner._id': 1,
+        'owner.username':1,
+        'owner.avatar': 1,
         caption: 1,
         likeCount: 1,
         isLiked: 1,
