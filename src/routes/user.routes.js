@@ -10,6 +10,7 @@ import {
     getUserChannelProfile,
     getUserDataById,
     deleteAvatar,
+    searchUser,
          } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { varifyJwt } from "../middlewares/auth.middleware.js";
@@ -27,6 +28,7 @@ router.route("/register").post(upload.single("avatar"),
     router.route("/getUserChannelProfile").post(varifyJwt, getUserChannelProfile)
     router.route("/getUserById").post(varifyJwt, getUserDataById)
     router.route("/deleteAvatar").get(varifyJwt, deleteAvatar)
+    router.route("/searchUser").post(varifyJwt, searchUser)
 
 
 export default router;

@@ -436,6 +436,29 @@ const checkUserName = asyncHandler(async (req, res) => {
         }
     })
 
+    const searchUser = asyncHandler(async (req, res) => {
+        const {username} = req.body
+         if(!username) throw new ApiError(400, "username is required")
+
+            const userData = await User.find({username}).select("-password -refreshToken")
+            if(!userData) {
+                return res.status(200).json(
+                    new ApiResponse(
+                        200,
+                        [],
+                        "fetch user sucessfully"
+                    )
+                )
+            }
+
+            return res.status(201).json(
+                new ApiResponse(
+                    201,
+                    userData,
+                    "Fetch user Sucessfully"
+                )
+            )
+    })
 
 
 export {
@@ -451,5 +474,5 @@ export {
     deleteAvatar,
     checkUserName,
     getUserDataById,
-    
+    searchUser
 }
